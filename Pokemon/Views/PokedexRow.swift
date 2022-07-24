@@ -20,7 +20,6 @@ class PokedexRow: UITableViewCell {
         
         pokemonImageView = createPokemonImageView()
         pokemonCaptionStack = createPokemonDescriptionStack()
-        createChevron()
     }
     
     required init?(coder: NSCoder) {
@@ -93,20 +92,5 @@ extension PokedexRow {
         label.textColor = .secondaryLabel
         
         return label
-    }
-    
-    private func createChevron() {
-        let symbolConfig = UIImage.SymbolConfiguration(textStyle: .headline)
-        let symbol = UIImageView(
-            image: UIImage(
-                systemName: "chevron.right",
-                withConfiguration: symbolConfig
-            )
-        )
-        symbol.tintColor = .tertiaryLabel
-        addSubview(symbol)
-        symbol.translatesAutoresizingMaskIntoConstraints = false
-        symbol.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        symbol.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16).isActive = true
     }
 }

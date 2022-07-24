@@ -121,6 +121,8 @@ extension PokedexVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //FIXME: Task is not the right way i think
         let cell = tableView.dequeueReusableCell(withIdentifier: "PokedexRow") as! PokedexRow
+        cell.accessoryType = .disclosureIndicator
+        
         let pokemon = pokemonManager.pokemonList[indexPath.row]
         Task {
             try? await cell.setData(
