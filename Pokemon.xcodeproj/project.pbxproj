@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		68470903288DD0640098539F /* PokemonDetailedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68470902288DD0640098539F /* PokemonDetailedVC.swift */; };
 		68848B71288A998000EA9872 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68848B70288A998000EA9872 /* AppDelegate.swift */; };
 		68848B7A288A998000EA9872 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 68848B79288A998000EA9872 /* Assets.xcassets */; };
 		68848B7D288A998000EA9872 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 68848B7B288A998000EA9872 /* LaunchScreen.storyboard */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		68470902288DD0640098539F /* PokemonDetailedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonDetailedVC.swift; sourceTree = "<group>"; };
 		68848B6D288A998000EA9872 /* Pokemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pokemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		68848B70288A998000EA9872 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		68848B79288A998000EA9872 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 			children = (
 				68848B86288AA0C000EA9872 /* PokedexVC.swift */,
 				68848B88288AC27B00EA9872 /* PokedexRow.swift */,
+				68470902288DD0640098539F /* PokemonDetailedVC.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -212,6 +215,7 @@
 				68848B71288A998000EA9872 /* AppDelegate.swift in Sources */,
 				68848B9A288ACDCE00EA9872 /* PokemonIndex+Anchor.swift in Sources */,
 				68848B98288ACDCE00EA9872 /* Pokemon+Sprites.swift in Sources */,
+				68470903288DD0640098539F /* PokemonDetailedVC.swift in Sources */,
 				68848B95288ACDCE00EA9872 /* Pokemon+Moves.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

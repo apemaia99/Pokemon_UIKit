@@ -8,17 +8,19 @@
 import UIKit
 
 class PokedexRow: UITableViewCell {
-    
-    private var pokemonImageView = UIImageView()
-    private var pokemonLabelView = UILabel()
+    //MARK: Stacks
+    private var pokemonCaptionStack: UIStackView!
+    //MARK: Views
+    private var pokemonImageView: UIImageView!
+    private var pokemonNameLabelView: UILabel!
+    private var pokemonMovesLabelView: UILabel!
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        addSubview(pokemonImageView)
-        addSubview(pokemonLabelView)
-        configurePokemonImageView()
-        configurePokemonLabelView()
+        pokemonImageView = createPokemonImageView()
+        pokemonCaptionStack = createPokemonDescriptionStack()
+        createChevron()
     }
     
     required init?(coder: NSCoder) {
@@ -26,29 +28,85 @@ class PokedexRow: UITableViewCell {
     }
     
     func setData(pokemon: Pokemon, image: UIImage) {
-        self.pokemonLabelView.text = pokemon.name
+        self.pokemonNameLabelView.text = pokemon.name.capitalized
+        self.pokemonMovesLabelView.text = "Number of moves: \(pokemon.moves.count)"
         self.pokemonImageView.image = image
     }
+}
+//MARK: - Views Configuration
+extension PokedexRow {
     
-    private func configurePokemonImageView() {
-        pokemonImageView.layer.cornerRadius = 10
-        pokemonImageView.clipsToBounds = true
-        //MARK: Constraints
-        pokemonImageView.translatesAutoresizingMaskIntoConstraints = false
-        pokemonImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        pokemonImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
-        pokemonImageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-        pokemonImageView.widthAnchor.constraint(equalTo: pokemonImageView.heightAnchor, multiplier: 16/9).isActive = true
+    private func createPokemonImageView() -> UIImageView {
+        
+        let imageView = UIImageView()
+        imageView.layer.cornerRadius = 10
+        imageView.clipsToBounds = true
+        
+        addSubview(imageView)
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        imageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
+        imageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        
+        return imageView
     }
     
-    private func configurePokemonLabelView() {
-        pokemonLabelView.numberOfLines = 0
-        pokemonLabelView.adjustsFontSizeToFitWidth = true
-        //MARK: Constraints
-        pokemonLabelView.translatesAutoresizingMaskIntoConstraints = false
-        pokemonLabelView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        pokemonLabelView.leadingAnchor.constraint(equalTo: pokemonImageView.trailingAnchor, constant: 20).isActive = true
-        pokemonLabelView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-        pokemonLabelView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12).isActive = true
+    private func createPokemonDescriptionStack() -> UIStackView {
+        
+        pokemonNameLabelView = createPokemonNameLabelView()
+        pokemonMovesLabelView = createPokemonMovesLabelView()
+        
+        let stack = UIStackView(arrangedSubviews: [
+            pokemonNameLabelView,
+            pokemonMovesLabelView
+        ])
+        stack.axis = .vertical
+        stack.distribution = .equalSpacing
+        stack.spacing = 12
+        
+        addSubview(stack)
+        
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.leadingAnchor.constraint(equalTo: pokemonImageView.trailingAnchor, constant: 16).isActive = true
+        stack.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        
+        return stack
+    }
+    
+    private func createPokemonNameLabelView() -> UILabel {
+        
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 17, weight: .semibold)
+        label.numberOfLines = 0
+        label.adjustsFontSizeToFitWidth = true
+        
+        return label
+    }
+    
+    private func createPokemonMovesLabelView() -> UILabel {
+        
+        let label = UILabel()
+        label.numberOfLines = 0
+        label.adjustsFontSizeToFitWidth = true
+        label.textColor = .secondaryLabel
+        
+        return label
+    }
+    
+    private func createChevron() {
+        let symbolConfig = UIImage.SymbolConfiguration(textStyle: .headline)
+        let symbol = UIImageView(
+            image: UIImage(
+                systemName: "chevron.right",
+                withConfiguration: symbolConfig
+            )
+        )
+        symbol.tintColor = .tertiaryLabel
+        addSubview(symbol)
+        symbol.translatesAutoresizingMaskIntoConstraints = false
+        symbol.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        symbol.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16).isActive = true
     }
 }

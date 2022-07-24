@@ -10,11 +10,12 @@ import UIKit
 class PokedexVC: UIViewController {
     
     private let pokemonManager: PokemonManager
-    private let tableview = UITableView(frame: .zero, style: .insetGrouped)
+    private var tableView: UITableView!
     //Custom init for dependency injection
     init(pokemoManager: PokemonManager) {
         self.pokemonManager = pokemoManager
         super.init(nibName: nil, bundle: nil)
+        
     }
     
     required init?(coder: NSCoder) {
@@ -23,45 +24,47 @@ class PokedexVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureNC()
-        configureTableView()
+        configureVC()
+        tableView = createTableView()
         Task {
             await load()
         }
     }
     
-    func load() async {
+    private func load() async {
         await pokemonManager.loadMore(firstCall: true)
-        self.tableview.reloadData()
+        self.tableView.reloadData()
     }
     
-    func order(mode: PokemonManager.OrderMode) {
+    private func order(mode: PokemonManager.OrderMode) {
         pokemonManager.orderList(by: mode)
-        self.tableview.reloadData()
+        self.tableView.reloadData()
     }
 }
-//MARK: - ViewsConfiguration
+//MARK: - Views Configuration
 extension PokedexVC {
     
-    private func configureNC() {
+    private func configureVC() {
+        
         self.title = "Pokedex"
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.view.backgroundColor = .systemBackground
         self.navigationItem.rightBarButtonItem = createNavBarMenu()
     }
     
-    private func configureTableView() {
-        view.addSubview(tableview)
-        configureDelegates()
-        tableview.rowHeight = 100
-        tableview.register(PokedexRow.self, forCellReuseIdentifier: "PokedexRow")
-        tableview.pin(to: view)
+    private func createTableView() -> UITableView {
         
-    }
-    
-    private func configureDelegates() {
-        tableview.delegate = self
-        tableview.dataSource = self
+        let tableView = UITableView(frame: .zero, style: .insetGrouped)
+        tableView.rowHeight = 90
+        
+        tableView.register(PokedexRow.self, forCellReuseIdentifier: "PokedexRow")
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        view.addSubview(tableView)
+        tableView.pin(to: view)
+        
+        return tableView
     }
     
     private func createNavBarMenu() -> UIBarButtonItem {
@@ -93,9 +96,14 @@ extension PokedexVC {
             children: actions
         )
         
+        let symbol = UIImage(
+            systemName: "arrow.up.arrow.down.circle.fill",
+            withConfiguration: UIImage.SymbolConfiguration(textStyle: .title2)
+        )
+        
         let button = UIBarButtonItem(
             title: nil,
-            image: UIImage(systemName: "arrow.up.arrow.down.circle.fill"),
+            image: symbol,
             primaryAction: nil,
             menu: menu
         )
@@ -103,7 +111,7 @@ extension PokedexVC {
         return button
     }
 }
-//MARK: - Delegates
+//MARK: - TableView Delegates
 extension PokedexVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -111,6 +119,7 @@ extension PokedexVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        //FIXME: Task is not the right way i think
         let cell = tableView.dequeueReusableCell(withIdentifier: "PokedexRow") as! PokedexRow
         let pokemon = pokemonManager.pokemonList[indexPath.row]
         Task {
@@ -121,5 +130,12 @@ extension PokedexVC: UITableViewDelegate, UITableViewDataSource {
         }
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let pokemonDetailedVC = PokemonDetailedVC(pokemon: pokemonManager.pokemonList[indexPath.row])
+        navigationController?.pushViewController(pokemonDetailedVC, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
