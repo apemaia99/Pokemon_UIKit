@@ -53,7 +53,7 @@ extension PokemonDetailedVC {
     
     private func createCell(text: String) -> UITableViewCell {
         
-        let cell = UITableViewCell(style: .default, reuseIdentifier: text)
+        let cell = UITableViewCell(style: .default, reuseIdentifier: text.hashValue.formatted())
         
         let labelView = UILabel()
         labelView.text = text
@@ -86,10 +86,7 @@ extension PokemonDetailedVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.section == 0 {
-            return 210
-        }
-        return 45
+        return indexPath.section == 0 ? 210 : 45
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
