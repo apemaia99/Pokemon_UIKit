@@ -26,10 +26,20 @@ class PokedexRow: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setData(pokemon: Pokemon, image: UIImage) {
+    func setData(pokemon: Pokemon) {
         self.pokemonNameLabelView.text = pokemon.name.capitalized
         self.pokemonMovesLabelView.text = "Number of moves: \(pokemon.moves.count)"
-        self.pokemonImageView.image = image
+        Task {
+            do {
+                async let data = NetworkService.shared.fetchData(for: pokemon.sprites.front_default)
+                if let image = try await UIImage(data: data) {
+                    self.pokemonImageView.image = image
+                }
+            } catch {
+                self.pokemonImageView.image = UIImage(systemName: "questionmark.app.fill")!
+                self.pokemonImageView.tintColor = .tertiaryLabel
+            }
+        }
     }
 }
 //MARK: - Views Configuration

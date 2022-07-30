@@ -27,12 +27,12 @@ class PokedexVC: UIViewController {
         configureVC()
         tableView = createTableView()
         Task {
-            await load()
+            await load(firstCall: true)
         }
     }
     
-    private func load() async {
-        await pokemonManager.loadMore(firstCall: true)
+    private func load(firstCall: Bool = false) async {
+        await pokemonManager.loadMore(firstCall: firstCall)
         self.tableView.reloadData()
     }
     
@@ -119,17 +119,16 @@ extension PokedexVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //FIXME: Task is not the right way i think
+        //Pagination
+        if indexPath.row == tableView.numberOfRows(inSection: 0) - 1 {
+            Task {
+                await load()
+            }
+        }
+        //Cell setup
         let cell = tableView.dequeueReusableCell(withIdentifier: "PokedexRow") as! PokedexRow
         cell.accessoryType = .disclosureIndicator
-        
-        let pokemon = pokemonManager.pokemonList[indexPath.row]
-        Task {
-            try? await cell.setData(
-                pokemon: pokemon,
-                image: pokemonManager.fetchImage(by: pokemon.sprites.front_default)
-            )
-        }
+        cell.setData(pokemon: pokemonManager.pokemonList[indexPath.row])
         
         return cell
     }

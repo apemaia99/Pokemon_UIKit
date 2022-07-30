@@ -9,6 +9,8 @@ import Foundation
 
 actor NetworkService {
     
+    static let shared = NetworkService()
+    
     private var cache: [(url: URL, data: Data)] = []
     
     func fetchObject<T: Codable>(for url: URL) async throws -> T {

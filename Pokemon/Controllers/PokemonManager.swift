@@ -6,15 +6,15 @@
 //
 
 import Foundation
-import UIKit
 
-final class PokemonManager {
+@MainActor
+final class PokemonManager: ObservableObject {
     
     private let networkService = NetworkService()
     
     private var pokemonIndex: PokemonIndex?
-    private(set) var pokemonList: [Pokemon] = []
-    private var pokemonFiltered: [Pokemon] = []
+    @Published private(set) var pokemonList: [Pokemon] = []
+    @Published private(set) var pokemonFiltered: [Pokemon] = []
     private var orderingMode: OrderMode = .standard
     
     private func getPokemonIndex(by url: URL?) async throws -> PokemonIndex {
@@ -32,6 +32,7 @@ final class PokemonManager {
     }
     
     private func getPokemons() async throws -> [Pokemon] {
+        //FIXME: - add pokemond index as input paremeter
         return try await withThrowingTaskGroup(of: Pokemon.self) { group in
             
             var results: [Pokemon] = []
@@ -51,15 +52,6 @@ final class PokemonManager {
             }
             return results
         }
-    }
-    
-    func fetchImage(by url: URL) async throws -> UIImage {
-        async let data = networkService.fetchData(for: url)
-        guard let image = try await UIImage(data: data) else {
-            throw Error.imageParsing
-        }
-        
-        return image
     }
     
     func loadMore(firstCall: Bool = false) async {
@@ -102,6 +94,5 @@ extension PokemonManager {
     enum Error: LocalizedError {
         case invalidURL
         case missingPokemonIndex
-        case imageParsing
     }
 }
