@@ -17,14 +17,7 @@ final class PokemonManager: ObservableObject {
     @Published private(set) var pokemonFiltered: [Pokemon] = []
     private var orderingMode: OrderMode = .standard
     
-    private func getPokemonIndex(by url: URL?) async throws -> PokemonIndex {
-        guard let url = url else {
-            throw Error.invalidURL
-        }
-        return try await networkService.fetchObject(for: url)
-    }
-    
-    private func getPokemon(by url: URL?) async throws -> Pokemon {
+    private func getData<T:Codable>(by url: URL?) async throws -> T {
         guard let url = url else {
             throw Error.invalidURL
         }
@@ -43,7 +36,7 @@ final class PokemonManager: ObservableObject {
             
             for url in pokemonIndex.results.map({ $0.url }) {
                 group.addTask() {
-                    return try await self.getPokemon(by: url)
+                    return try await self.getData(by: url)
                 }
             }
             
@@ -56,7 +49,7 @@ final class PokemonManager: ObservableObject {
     
     func loadMore(firstCall: Bool = false) async {
         do {
-            pokemonIndex = try await getPokemonIndex(
+            pokemonIndex = try await getData(
                 by: firstCall ? URL(string: "https://pokeapi.co/api/v2/pokemon/")! : self.pokemonIndex?.next
             )
             pokemonList.append(
