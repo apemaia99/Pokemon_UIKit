@@ -17,13 +17,6 @@ final class PokemonManager: ObservableObject {
     @Published private(set) var pokemonFiltered: [Pokemon] = []
     private var orderingMode: OrderMode = .standard
     
-    private func getData<T:Codable>(by url: URL?) async throws -> T {
-        guard let url = url else {
-            throw Error.invalidURL
-        }
-        return try await networkService.fetchObject(for: url)
-    }
-    
     private func getPokemons() async throws -> [Pokemon] {
         //FIXME: - add pokemond index as input paremeter
         return try await withThrowingTaskGroup(of: Pokemon.self) { group in
@@ -78,6 +71,17 @@ final class PokemonManager: ObservableObject {
 }
 
 extension PokemonManager {
+    
+    private func getData<T:Codable>(by url: URL?) async throws -> T {
+        guard let url = url else {
+            throw Error.invalidURL
+        }
+        return try await networkService.fetchObject(for: url)
+    }
+}
+
+extension PokemonManager {
+    
     enum OrderMode {
         case reverse
         case alphabetical
