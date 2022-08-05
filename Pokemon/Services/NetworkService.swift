@@ -37,7 +37,6 @@ actor NetworkService {
             throw Error.request
         }
         
-        
         cache.append(
             (url: url, data: data)
         )

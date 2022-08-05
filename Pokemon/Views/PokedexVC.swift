@@ -11,6 +11,7 @@ class PokedexVC: UIViewController {
     
     private let pokemonManager: PokemonManager
     private var tableView: UITableView!
+    private var search: UISearchController!
     //Custom init for dependency injection
     init(pokemoManager: PokemonManager) {
         self.pokemonManager = pokemoManager
@@ -26,19 +27,11 @@ class PokedexVC: UIViewController {
         super.viewDidLoad()
         configureVC()
         tableView = createTableView()
+        search = createSearch()
         Task {
-            await load(firstCall: true)
+            await pokemonManager.loadPokemons(firstCall: true)
+            self.tableView.reloadData()
         }
-    }
-    
-    private func load(firstCall: Bool = false) async {
-        await pokemonManager.loadMore(firstCall: firstCall)
-        self.tableView.reloadData()
-    }
-    
-    private func order(mode: PokemonManager.OrderMode) {
-        pokemonManager.orderList(by: mode)
-        self.tableView.reloadData()
     }
 }
 //MARK: - Views Configuration
@@ -73,19 +66,22 @@ extension PokedexVC {
             .init(
                 title: "Alphabetical",
                 handler: { _ in
-                    self.order(mode: .alphabetical)
+                    self.pokemonManager.sortPokemons(by: .alphabetical)
+                    self.tableView.reloadData()
                 }
             ),
             .init(
                 title: "Reverse",
                 handler: { _ in
-                    self.order(mode: .reverse)
+                    self.pokemonManager.sortPokemons(by: .reverse)
+                    self.tableView.reloadData()
                 }
             ),
             .init(
                 title: "Standard",
                 handler: { _ in
-                    self.order(mode: .standard)
+                    self.pokemonManager.sortPokemons(by: .standard)
+                    self.tableView.reloadData()
                 }
             )
         ]
@@ -110,33 +106,59 @@ extension PokedexVC {
         
         return button
     }
+    
+    private func createSearch() -> UISearchController {
+        
+        let search = UISearchController()
+        search.searchResultsUpdater = self
+        self.navigationItem.searchController = search
+        
+        return search
+    }
 }
 //MARK: - TableView Delegates
 extension PokedexVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return pokemonManager.pokemonList.count
+        return pokemonManager.pokemonFiltered.isEmpty ? pokemonManager.pokemonList.count : pokemonManager.pokemonFiltered.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //Pagination
-        if indexPath.row == tableView.numberOfRows(inSection: 0) - 1 {
+        if !search.isActive && indexPath.row == tableView.numberOfRows(inSection: 0) - 1 {
             Task {
-                await load()
+                await pokemonManager.loadPokemons()
+                self.tableView.reloadData()
             }
         }
         //Cell setup
         let cell = tableView.dequeueReusableCell(withIdentifier: "PokedexRow") as! PokedexRow
         cell.accessoryType = .disclosureIndicator
-        cell.setData(pokemon: pokemonManager.pokemonList[indexPath.row])
+        
+        if pokemonManager.pokemonFiltered.isEmpty {
+            cell.setData(pokemon: pokemonManager.pokemonList[indexPath.row])
+        } else {
+            cell.setData(pokemon: pokemonManager.pokemonFiltered[indexPath.row])
+        }
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let pokemonDetailedVC = PokemonDetailedVC(pokemon: pokemonManager.pokemonList[indexPath.row])
+        let pokemonDetailedVC = PokemonDetailedVC(
+            pokemon: !search.isActive ? pokemonManager.pokemonList[indexPath.row] : pokemonManager.pokemonFiltered[indexPath.row]
+        )
         navigationController?.pushViewController(pokemonDetailedVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+//MARK: - UISearchController Delegates
+extension PokedexVC: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        if searchController.isActive {
+            pokemonManager.filterPokemons(by: searchController.searchBar.text ?? "")
+        }
+        tableView.reloadData()
     }
 }

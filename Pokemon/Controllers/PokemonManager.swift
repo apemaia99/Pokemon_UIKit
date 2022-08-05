@@ -12,13 +12,12 @@ final class PokemonManager: ObservableObject {
     
     private let networkService = NetworkService()
     
-    private var pokemonIndex: PokemonIndex?
     @Published private(set) var pokemonList: [Pokemon] = []
     @Published private(set) var pokemonFiltered: [Pokemon] = []
-    private var orderingMode: OrderMode = .standard
+    private var pokemonIndex: PokemonIndex?
+    private var lastOrderingMode: OrderMode = .standard
     
     private func getPokemons() async throws -> [Pokemon] {
-        //FIXME: - add pokemond index as input paremeter
         return try await withThrowingTaskGroup(of: Pokemon.self) { group in
             
             var results: [Pokemon] = []
@@ -40,7 +39,7 @@ final class PokemonManager: ObservableObject {
         }
     }
     
-    func loadMore(firstCall: Bool = false) async {
+    func loadPokemons(firstCall: Bool = false) async {
         do {
             pokemonIndex = try await getData(
                 by: firstCall ? URL(string: "https://pokeapi.co/api/v2/pokemon/")! : self.pokemonIndex?.next
@@ -48,14 +47,17 @@ final class PokemonManager: ObservableObject {
             pokemonList.append(
                 contentsOf: try await getPokemons()
             )
-            orderList(by: orderingMode)
+            sortPokemons(by: lastOrderingMode)
         } catch {
             print(error)
         }
     }
     
-    func orderList(by order: OrderMode) {
-        switch order {
+    func sortPokemons(by mode: OrderMode) {
+        
+        lastOrderingMode = mode
+        
+        switch mode {
         case .reverse:
             pokemonList.sort(by: { $0.name > $1.name })
         case .alphabetical:
@@ -65,7 +67,7 @@ final class PokemonManager: ObservableObject {
         }
     }
     
-    func filterList(by text: String) {
+    func filterPokemons(by text: String) {
         pokemonFiltered = pokemonList.filter({ $0.name.localizedCaseInsensitiveContains(text) })
     }
 }

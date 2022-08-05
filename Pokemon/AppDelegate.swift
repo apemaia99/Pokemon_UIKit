@@ -10,7 +10,7 @@ import UIKit
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
-    var pokemonManager = PokemonManager()
+    private var pokemonManager = PokemonManager()
     var window: UIWindow?
 
     func application(

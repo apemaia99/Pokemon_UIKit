@@ -66,6 +66,33 @@ extension PokemonDetailedVC {
         
         return cell
     }
+    
+    private func createImageCell(url: URL) -> UITableViewCell {
+        
+        let cell = UITableViewCell(style: .default, reuseIdentifier: "image")
+        let imageView = UIImageView()
+        
+        cell.addSubview(imageView)
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.centerXAnchor.constraint(equalTo: cell.centerXAnchor).isActive = true
+        imageView.centerYAnchor.constraint(equalTo: cell.centerYAnchor).isActive = true
+        
+        Task {
+            do {
+                async let data = NetworkService.shared.fetchData(for: url)
+                if let image = try await UIImage(data: data) {
+                    imageView.image = image
+                }
+            } catch {
+                imageView.image = UIImage(systemName: "questionmark.app.fill")!
+                imageView.tintColor = .tertiaryLabel
+            }
+        }
+        
+        return cell
+    }
+    
 }
 //MARK: - TableView Delegates
 extension PokemonDetailedVC: UITableViewDelegate, UITableViewDataSource {
@@ -103,10 +130,7 @@ extension PokemonDetailedVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0:
-            //FIXME: need to implement image part
-            let cell = UITableViewCell(style: .default, reuseIdentifier: "image")
-            return cell
-            
+            return createImageCell(url: pokemon.sprites.front_default)
         case 1:
             if indexPath.row == 0 {
                 return createCell(text: "Height \(pokemon.height)")

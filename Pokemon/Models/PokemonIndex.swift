@@ -8,8 +8,8 @@
 import Foundation
 
 struct PokemonIndex: Codable {
-    var count: Int
-    var next: URL?
-    var previous: URL?
-    var results: [PokemonAnchor]
+    let count: Int
+    let next: URL?
+    let previous: URL?
+    let results: [PokemonAnchor]
 }
