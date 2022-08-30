@@ -8,7 +8,7 @@
   <p>This is a sample Project for fetching data from <a href="https://pokeapi.co">PokeAPI</a> in Swift &amp; UIKit</p>
   <ul>
     <li>This Application is full written in Swift.</li>
-    <li>UI has been implemented implemented with UIKit.</li>
+    <li>UI has been implemented with UIKit. In this particular case in 'programmatic way' without use of Storyboards.</li>
     <li>The http client for API requests leverage the latest <a href="https://docs.swift.org/swift-book/LanguageGuide/Concurrency.html">Swift Concurrency Features</a> (Async-Await/Actors) because of that, all async methods can potentially been suspended awaiting results, this implies also a better reading and reasoning compared to the traditional callbacks.</li>
     <li>Images are downloaded with a basic caching system implemented inside Http Client for avoid useless downloads and data consumption.</li>
     <li>Because the pokemon count amount to 1154, is unrealistic to download everything in one shot, so it has been implemented also a pagination system, that download other pokemons while scrolling.</li>
