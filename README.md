@@ -13,6 +13,6 @@
     <li>Images are downloaded with a basic caching system implemented inside Http Client for avoid useless downloads and data consumption.</li>
     <li>Because the pokemon count amount to 1154, is unrealistic to download everything in one shot, so it has been implemented also a pagination system, that download other pokemons while scrolling.</li>
     <li>Furthermore with <a href="https://developer.apple.com/documentation/swift/withthrowingtaskgroup(of:returning:body:)">withThrowingTaskGroup</a> we are able to download data in parallel instead of a sequential async requests.</li>
-    <li>PokemonManager is an observable object just because is shared with the SwiftUI version of the same project that you can fine <a href="https://github.com/apemaia99/Pokemon_SwiftUI">here</a></li>
+    <li>PokemonManager is an observable object just because is shared with the SwiftUI version of the same project that you can find <a href="https://github.com/apemaia99/Pokemon_SwiftUI">here</a></li>
   </ul>
 </body>
